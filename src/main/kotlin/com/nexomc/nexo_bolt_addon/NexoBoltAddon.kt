@@ -18,7 +18,7 @@ class NexoBoltAddon : JavaPlugin() {
         Bukkit.getPluginManager().registerEvents(NexoFurnitureListener(), this)
         bolt.registerListener(LockBlockEvent::class.java) { event ->
             if (!IFurniturePacketManager.blockIsHitbox(event.block)) return@registerListener
-            IFurniturePacketManager.baseEntityFromHitbox(BlockLocation(event.block.location)) ?: return@registerListener
+            IFurniturePacketManager.baseEntityFromHitbox(event.block.location) ?: return@registerListener
             event.isCancelled = true
         }
     }

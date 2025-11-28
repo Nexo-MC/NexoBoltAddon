@@ -7,6 +7,7 @@ import com.nexomc.nexo.mechanics.furniture.BlockLocation
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic
 import com.nexomc.nexo.mechanics.furniture.IFurniturePacketManager
 import com.nexomc.nexo.utils.AdventureUtils
+import com.nexomc.nexo.utils.deserialize
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -25,8 +26,10 @@ class NexoFurnitureListener : Listener {
         if (boltPlugin.player(player).action != null) return
         if (!bolt.isProtectedExact(baseEntity)) return
         if (useFurniture == Event.Result.DENY || bolt.canAccess(baseEntity, player, Permission.INTERACT)) return
-        if (mechanic.hasSeats() && bolt.canAccess(baseEntity, player, Permission.MOUNT)) return
-        if (mechanic.isStorage() && bolt.canAccess(baseEntity, player, Permission.OPEN)) return
+        if (mechanic.hasSeats && bolt.canAccess(baseEntity, player, Permission.MOUNT)) return
+        if (mechanic.hasBeds && bolt.canAccess(baseEntity, player, Permission.MOUNT)) return
+        if (mechanic.isJukebox && bolt.canAccess(baseEntity, player, Permission.INTERACT)) return
+        if (mechanic.isStorage && bolt.canAccess(baseEntity, player, Permission.OPEN)) return
 
         useFurniture = Event.Result.DENY
     }
@@ -55,18 +58,18 @@ class NexoFurnitureListener : Listener {
             Action.Type.LOCK -> when {
                 !bolt.isProtectedExact(baseEntity) -> {
                     bolt.saveProtection(bolt.createProtection(baseEntity, player.uniqueId, action.data))
-                    player.sendMessage(AdventureUtils.MINI_MESSAGE.deserialize("Locked <yellow>Private <i>${mechanic.itemID}"))
+                    player.sendMessage("Locked <yellow>Private <i>${mechanic.itemID}".deserialize())
                 }
 
-                else -> player.sendMessage(AdventureUtils.MINI_MESSAGE.deserialize("Could not private <yellow><i>${mechanic.itemID}"))
+                else -> player.sendMessage("Could not private <yellow><i>${mechanic.itemID}".deserialize())
             }
             Action.Type.UNLOCK -> when {
                 bolt.isProtectedExact(baseEntity) && bolt.canAccess(baseEntity, player) -> {
                     bolt.removeProtection(bolt.findProtection(baseEntity))
-                    player.sendMessage(AdventureUtils.MINI_MESSAGE.deserialize("Unlocked <yellow><i>${mechanic.itemID}"))
+                    player.sendMessage("Unlocked <yellow><i>${mechanic.itemID}".deserialize())
                 }
 
-                else -> player.sendMessage(AdventureUtils.MINI_MESSAGE.deserialize("Furniture <yellow><i>${mechanic.itemID}</i></yellow> was not private"))
+                else -> player.sendMessage("Furniture <yellow><i>${mechanic.itemID}</i></yellow> was not private".deserialize())
             }
             else -> return false
         }
